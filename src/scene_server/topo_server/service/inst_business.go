@@ -61,7 +61,8 @@ func (s *Service) CreateBusiness(ctx *rest.Contexts) {
 	var business inst.Inst
 	txnErr := s.Engine.CoreAPI.CoreService().Txn().AutoRunTxn(ctx.Kit.Ctx, ctx.Kit.Header, func() error {
 		var err error
-		business, err = s.Core.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
+		//business, err = s.Core.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
+		business, err = s.Logics.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
 		if err != nil {
 			blog.Errorf("create business failed, err: %v, rid: %s", err, ctx.Kit.Rid)
 			return err

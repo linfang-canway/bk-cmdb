@@ -15,27 +15,53 @@ package logics
 import (
 	"configcenter/src/ac/extensions"
 	"configcenter/src/apimachinery"
+	"configcenter/src/common/language"
+	coreInst "configcenter/src/scene_server/topo_server/core/inst"
+	coreModel "configcenter/src/scene_server/topo_server/core/model"
+	"configcenter/src/scene_server/topo_server/core/operation"
+	"configcenter/src/scene_server/topo_server/logics/inst"
 	"configcenter/src/scene_server/topo_server/logics/model"
 )
 
 // Logics provides management interface for operations of model and instance and related resources like association
 type Logics interface {
 	ClassificationOperation() model.ClassificationOperationInterface
+	BusinessOperation() inst.BusinessOperationInterface
 }
 
 type logics struct {
-	classification model.ClassificationOperationInterface
+	classification    model.ClassificationOperationInterface
+	businessOperation inst.BusinessOperationInterface
 }
 
 // New create a logics manager
-func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthManager) Logics {
+func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthManager, languageIf language.CCLanguageIf) Logics {
 	classificationOperation := model.NewClassificationOperation(client, authManager)
 
+	// TODO 临时借调
+	instOperation := operation.NewInstOperation(client, languageIf, authManager)
+	targetModel := coreModel.New(client, languageIf)
+	targetInst := coreInst.New(client)
+	//moduleOperation := operation.NewModuleOperation(client, authManager)
+	associationOperation := operation.NewAssociationOperation(client, authManager)
+	objectOperation := operation.NewObjectOperation(client, authManager)
+	instOperation.SetProxy(targetModel, targetInst, associationOperation, objectOperation)
+	setOperation := operation.NewSetOperation(client, languageIf)
+	moduleOperation := operation.NewModuleOperation(client, authManager)
+
+	businessOperationOperation := inst.NewBusinessOperation(client, authManager)
+	businessOperationOperation.SetProxy(instOperation, objectOperation, setOperation, moduleOperation)
+
 	return &logics{
-		classification: classificationOperation,
+		classification:    classificationOperation,
+		businessOperation: businessOperationOperation,
 	}
 }
 
 func (c *logics) ClassificationOperation() model.ClassificationOperationInterface {
 	return c.classification
+}
+
+func (c *logics) BusinessOperation() inst.BusinessOperationInterface {
+	return c.businessOperation
 }

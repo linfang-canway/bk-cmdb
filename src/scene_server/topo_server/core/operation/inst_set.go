@@ -134,14 +134,16 @@ func (s *set) CreateSet(kit *rest.Kit, obj model.Object, bizID int64, data mapst
 
 	setID, err := setInstance.GetInstID()
 	if err != nil {
-		blog.Errorf("create set instance success, but read instance id field failed, bizID: %d, setInstance: %+v, err: %s, rid: %s", bizID, setInstance, err.Error(), kit.Rid)
+		blog.Errorf("create set instance success, but read instance id field failed, bizID: %d, setInstance: %+v, err: %s, rid: %s", bizID,
+			setInstance, err.Error(), kit.Rid)
 		return setInstance, err
 	}
 
 	// set create by template should create module at the same time
 	serviceTemplates, err := s.clientSet.CoreService().SetTemplate().ListSetTplRelatedSvcTpl(kit.Ctx, kit.Header, bizID, setTemplate.ID)
 	if err != nil {
-		blog.Errorf("create set failed, ListSetTplRelatedSvcTpl failed, bizID: %d, setTemplateID: %d, err: %s, rid: %s", bizID, setTemplate.ID, err.Error(), kit.Rid)
+		blog.Errorf("create set failed, ListSetTplRelatedSvcTpl failed, bizID: %d, setTemplateID: %d, err: %s, rid: %s", bizID, setTemplate.ID,
+			err.Error(), kit.Rid)
 		return setInstance, err
 	}
 
@@ -161,7 +163,8 @@ func (s *set) CreateSet(kit *rest.Kit, obj model.Object, bizID int64, data mapst
 		}
 		_, err := s.module.CreateModule(kit, moduleObj, bizID, setID, createModuleParam)
 		if err != nil {
-			blog.Errorf("create set instance failed, create module instance failed, bizID: %d, setID: %d, param: %+v, err: %s, rid: %s", bizID, setID, createModuleParam, err.Error(), kit.Rid)
+			blog.Errorf("create set instance failed, create module instance failed, bizID: %d, setID: %d, param: %+v, err: %s, rid: %s", bizID,
+				setID, createModuleParam, err.Error(), kit.Rid)
 			return setInstance, err
 		}
 	}
