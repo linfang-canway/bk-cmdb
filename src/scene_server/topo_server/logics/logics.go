@@ -15,7 +15,6 @@ package logics
 import (
 	"configcenter/src/ac/extensions"
 	"configcenter/src/apimachinery"
-	"configcenter/src/common/language"
 	coreInst "configcenter/src/scene_server/topo_server/core/inst"
 	coreModel "configcenter/src/scene_server/topo_server/core/model"
 	"configcenter/src/scene_server/topo_server/core/operation"
@@ -34,20 +33,23 @@ type logics struct {
 	businessOperation inst.BusinessOperationInterface
 }
 
-// New create a logics manager
-func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthManager, languageIf language.CCLanguageIf) Logics {
+// New create a logics manager , languageIf language.CCLanguageIf
+func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthManager) Logics {
 	classificationOperation := model.NewClassificationOperation(client, authManager)
 
 	// TODO 临时借调
-	instOperation := operation.NewInstOperation(client, languageIf, authManager)
-	targetModel := coreModel.New(client, languageIf)
+	instOperation := operation.NewInstOperation(client, nil, authManager)
+	targetModel := coreModel.New(client, nil)
 	targetInst := coreInst.New(client)
 	//moduleOperation := operation.NewModuleOperation(client, authManager)
 	associationOperation := operation.NewAssociationOperation(client, authManager)
 	objectOperation := operation.NewObjectOperation(client, authManager)
 	instOperation.SetProxy(targetModel, targetInst, associationOperation, objectOperation)
-	setOperation := operation.NewSetOperation(client, languageIf)
+	setOperation := operation.NewSetOperation(client, nil)
 	moduleOperation := operation.NewModuleOperation(client, authManager)
+
+	setOperation.SetProxy(objectOperation, instOperation, moduleOperation)
+	moduleOperation.SetProxy(instOperation)
 
 	businessOperationOperation := inst.NewBusinessOperation(client, authManager)
 	businessOperationOperation.SetProxy(instOperation, objectOperation, setOperation, moduleOperation)
