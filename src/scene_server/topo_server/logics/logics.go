@@ -38,16 +38,14 @@ func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthMan
 	classificationOperation := model.NewClassificationOperation(client, authManager)
 
 	// TODO 临时借调
-	instOperation := operation.NewInstOperation(client, nil, authManager)
 	targetModel := coreModel.New(client, nil)
 	targetInst := coreInst.New(client)
-	//moduleOperation := operation.NewModuleOperation(client, authManager)
+	instOperation := operation.NewInstOperation(client, nil, authManager)
 	associationOperation := operation.NewAssociationOperation(client, authManager)
 	objectOperation := operation.NewObjectOperation(client, authManager)
-	instOperation.SetProxy(targetModel, targetInst, associationOperation, objectOperation)
 	setOperation := operation.NewSetOperation(client, nil)
 	moduleOperation := operation.NewModuleOperation(client, authManager)
-
+	instOperation.SetProxy(targetModel, targetInst, associationOperation, objectOperation)
 	setOperation.SetProxy(objectOperation, instOperation, moduleOperation)
 	moduleOperation.SetProxy(instOperation)
 
@@ -60,10 +58,12 @@ func New(client apimachinery.ClientSetInterface, authManager *extensions.AuthMan
 	}
 }
 
+// ClassificationOperation return a classification provide ClassificationOperationInterface
 func (c *logics) ClassificationOperation() model.ClassificationOperationInterface {
 	return c.classification
 }
 
+// BusinessOperation return a inst provide InstOperationInterface
 func (c *logics) BusinessOperation() inst.BusinessOperationInterface {
 	return c.businessOperation
 }

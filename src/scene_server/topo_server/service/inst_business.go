@@ -61,7 +61,6 @@ func (s *Service) CreateBusiness(ctx *rest.Contexts) {
 	var business inst.Inst
 	txnErr := s.Engine.CoreAPI.CoreService().Txn().AutoRunTxn(ctx.Kit.Ctx, ctx.Kit.Header, func() error {
 		var err error
-		//business, err = s.Core.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
 		business, err = s.Logics.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
 		if err != nil {
 			blog.Errorf("create business failed, err: %v, rid: %s", err, ctx.Kit.Rid)
@@ -125,7 +124,6 @@ func (s *Service) UpdateBusiness(ctx *rest.Contexts) {
 	}
 
 	txnErr := s.Engine.CoreAPI.CoreService().Txn().AutoRunTxn(ctx.Kit.Ctx, ctx.Kit.Header, func() error {
-		//err = s.Core.BusinessOperation().UpdateBusiness(ctx.Kit, data, obj, bizID)
 		err = s.Logics.BusinessOperation().UpdateBusiness(ctx.Kit, data, obj, bizID)
 		if err != nil {
 			return err
@@ -188,7 +186,6 @@ func (s *Service) UpdateBusinessStatus(ctx *rest.Contexts) {
 		}
 
 		// check if this business still has hosts.
-		//has, err := s.Core.BusinessOperation().HasHosts(ctx.Kit, bizID)
 		has, err := s.Logics.BusinessOperation().HasHosts(ctx.Kit, bizID)
 		if err != nil {
 			ctx.RespAutoError(err)
@@ -198,7 +195,6 @@ func (s *Service) UpdateBusinessStatus(ctx *rest.Contexts) {
 			ctx.RespAutoError(ctx.Kit.CCError.CCError(common.CCErrTopoArchiveBusinessHasHost))
 			return
 		}
-		//achieveBizName, err := s.Core.BusinessOperation().GenerateAchieveBusinessName(ctx.Kit, biz.BizName)
 		achieveBizName, err := s.Logics.BusinessOperation().GenerateAchieveBusinessName(ctx.Kit, biz.BizName)
 		if err != nil {
 			ctx.RespAutoError(err)
@@ -217,7 +213,6 @@ func (s *Service) UpdateBusinessStatus(ctx *rest.Contexts) {
 	}
 
 	txnErr := s.Engine.CoreAPI.CoreService().Txn().AutoRunTxn(ctx.Kit.Ctx, ctx.Kit.Header, func() error {
-		//err = s.Core.BusinessOperation().UpdateBusiness(ctx.Kit, updateData, obj, bizID)
 		err = s.Logics.BusinessOperation().UpdateBusiness(ctx.Kit, updateData, obj, bizID)
 		if err != nil {
 			blog.Errorf("UpdateBusinessStatus failed, run update failed, err: %+v, rid: %s", err, ctx.Kit.Rid)
@@ -288,7 +283,6 @@ func (s *Service) SearchReducedBusinessList(ctx *rest.Contexts) {
 
 	}
 
-	//cnt, instItems, err := s.Core.BusinessOperation().FindBiz(ctx.Kit, query)
 	cnt, instItems, err := s.Logics.BusinessOperation().FindBiz(ctx.Kit, query)
 	if nil != err {
 		blog.Errorf("[api-business] failed to find the objects(%s), error info is %s, rid: %s", ctx.Request.PathParameter("obj_id"), err.Error(), ctx.Kit.Rid)
@@ -502,7 +496,6 @@ func (s *Service) SearchBusiness(ctx *rest.Contexts) {
 	// can only find normal business, but not resource pool business
 	searchCond.Condition[common.BKDefaultField] = 0
 
-	//cnt, instItems, err := s.Core.BusinessOperation().FindBiz(ctx.Kit, searchCond)
 	cnt, instItems, err := s.Logics.BusinessOperation().FindBiz(ctx.Kit, searchCond)
 	if nil != err {
 		blog.Errorf("find business failed, err: %v, rid: %s", err, ctx.Kit.Rid)
@@ -528,7 +521,6 @@ func (s *Service) SearchOwnerResourcePoolBusiness(ctx *rest.Contexts) {
 		},
 	}
 
-	//cnt, instItems, err := s.Core.BusinessOperation().FindBiz(ctx.Kit, &query)
 	cnt, instItems, err := s.Logics.BusinessOperation().FindBiz(ctx.Kit, &query)
 	if nil != err {
 		blog.Errorf("[api-business] failed to find the objects(%s), error info is %s, rid: %s", ctx.Request.PathParameter("obj_id"), err.Error(), ctx.Kit.Rid)
@@ -564,7 +556,6 @@ func (s *Service) CreateDefaultBusiness(ctx *rest.Contexts) {
 	var business inst.Inst
 	txnErr := s.Engine.CoreAPI.CoreService().Txn().AutoRunTxn(ctx.Kit.Ctx, ctx.Kit.Header, func() error {
 		var err error
-		//business, err = s.Core.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
 		business, err = s.Logics.BusinessOperation().CreateBusiness(ctx.Kit, obj, data)
 		if err != nil {
 			blog.Errorf("create business failed, err: %+v", err)
@@ -712,7 +703,6 @@ func (s *Service) ListAllBusinessSimplify(ctx *rest.Contexts) {
 			common.BKDataStatusField: mapstr.MapStr{common.BKDBNE: common.DataStatusDisabled},
 		},
 	}
-	//cnt, instItems, err := s.Core.BusinessOperation().FindBiz(ctx.Kit, query)
 	cnt, instItems, err := s.Logics.BusinessOperation().FindBiz(ctx.Kit, query)
 	if nil != err {
 		blog.Errorf("ListAllBusinessSimplify failed, FindBusiness failed, err: %s, rid: %s", err.Error(), ctx.Kit.Rid)
